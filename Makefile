@@ -252,8 +252,8 @@ SUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
 # "make" in the configured kernel build directory always uses that.
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
-ARCH		?= $(SUBARCH)
-CROSS_COMPILE	?= $(CONFIG_CROSS_COMPILE:"%"=%)
+ARCH		?= arm
+CROSS_COMPILE	?= arm-linux-gnueabihf-
 
 # Architecture as present in compile.h
 UTS_MACHINE 	:= $(ARCH)
@@ -400,7 +400,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -std=gnu89 $(call cc-option,-fno-PIE)
-
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
@@ -765,6 +764,19 @@ ifdef CONFIG_DYNAMIC_FTRACE
 	endif
 endif
 endif
+
+# disable warnings in gcc
+KBUILD_CFLAGS += $(call cc-option, -Wno-array-bounds)
+KBUILD_CFLAGS += $(call cc-option, -Wno-attribute-alias)
+KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-overflow)
+KBUILD_CFLAGS += $(call cc-option, -Wno-packed-not-aligned)
+KBUILD_CFLAGS += $(call cc-option, -Wno-missing-attributes)
+KBUILD_CFLAGS += $(call cc-option, -Wno-stringop-truncation)
+KBUILD_CFLAGS += $(call cc-option, -Wno-missing-attributes)
+KBUILD_CFLAGS += $(call cc-option, -Wno-sizeof-pointer-memaccess)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-overflow)
+KBUILD_CFLAGS += $(call cc-disable-warning, format-truncation)
+KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
 
 # We trigger additional mismatches with less inlining
 ifdef CONFIG_DEBUG_SECTION_MISMATCH
